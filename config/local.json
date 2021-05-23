@@ -1,0 +1,16 @@
+{
+    "app": {
+      "name": "chat-app",
+      "port": 3000,
+      "secret": "enter random alphanumeric characters",
+      "url": "http://localhost:3000"
+    },
+    "db": {
+      "url": "mongodb://mongo/nearbychat"
+    },
+    "jwt": {
+      "duration": 3600000,
+      "duration_long": 604800000
+    },
+    "mail": {}
+  }
