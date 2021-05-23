@@ -6,7 +6,7 @@
       "url": "http://localhost:3000"
     },
     "db": {
-      "url": "mongodb://mongo/nearbychat"
+      "url": "mongodb://localhost:27017/nearbychat"
     },
     "jwt": {
       "duration": 3600000,

@@ -37,19 +37,14 @@ router.get("/:id", SecureAPI(), async (req, res, next) => {
 
 // router.get("");
 
-router.post(
-  "/update/:id",
-  SecureAPI(),
-  upload.single("image"),
-  async (req, res, next) => {
-    let data = await Controller.updateUser(
-      req.body,
-      req.file.path,
-      req.params.id
-    );
-    res.json(data);
-  }
-);
+router.post("/update/:id", SecureAPI(), async (req, res, next) => {
+  let data = await Controller.updateUser(
+    req.body,
+    req.file.path,
+    req.params.id
+  );
+  res.json(data);
+});
 
 router.post("/register", async (req, res, next) => {
   //data :
@@ -86,5 +81,7 @@ router.post("/login", async (req, res, next) => {
     res.json(error);
   }
 });
+
+router.post("/forgetpassword", async (req, res) => {});
 
 module.exports = router;

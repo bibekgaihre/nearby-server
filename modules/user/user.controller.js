@@ -32,7 +32,6 @@ const checkAuth = async (payload) => {
   if (chkPass) {
     return user;
   }
-  console.log("incorrect");
   return Promise.resolve({
     message: "Email or Password is incorrect. Please try again",
   });
@@ -45,7 +44,7 @@ const getUser = async (payload) => {
 
 const updateUser = async (payload, path, id) => {
   payload = {
-    full_name: payload.full_name,
+    username: payload.username,
     phone: payload.phone,
     image: path,
   };
