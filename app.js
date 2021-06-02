@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const config = require("config");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const conversationController = require("./modules/conversation/conversation.controller");
@@ -34,6 +35,7 @@ mongoose.connect(
   }
 );
 
+app.use(cors());
 app.set("views", path.join(__dirname, "views"));
 app.engine("handlebars", exphbs());
 app.set("view engine", "handlebars");
