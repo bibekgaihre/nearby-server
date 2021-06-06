@@ -7,12 +7,19 @@ const LocationSchema = mongoose.Schema(
       ref: "User",
     },
     location: {
-      type: "Point",
-      coordinates: [],
+      type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ["Point"], // 'location.type' must be 'Point'
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
   },
   {
-    collection: "user",
+    collection: "location",
     timestamps: {
       createdAt: "created_at",
       updatedAt: "updated_at",

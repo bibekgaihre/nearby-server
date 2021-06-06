@@ -1,8 +1,13 @@
 const router = require("express").Router();
 const config = require("config");
 const secureAPI = require("../../utils/secureAPI");
+const locationController = require("./location.controller");
 
-router.post("/", secureAPI(), async (req, res, next) => {
+router.get("/", secureAPI(), async (req, res) => {
+  // let data=await
+});
+
+router.post("/", secureAPI(), async (req, res) => {
   //post the user location Lon, Lat
 });
 

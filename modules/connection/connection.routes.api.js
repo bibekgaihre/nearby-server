@@ -3,7 +3,7 @@ const config = require("config");
 const userController = require("../user/user.controller");
 const SecureAPI = require("../../utils/secureAPI");
 
-const connectionController = require("../connection/connection.controller");
+const connectionController = require("./connection.controller");
 
 router.get("/:id", async (req, res, next) => {
   let data = await userController.listConnections(req.params.id);

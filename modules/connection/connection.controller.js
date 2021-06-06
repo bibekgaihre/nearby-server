@@ -1,4 +1,4 @@
-const { compareSync } = require("bcryptjs");
+// const { compareSync } = require("bcryptjs");
 const connectionModel = require("./connection.model");
 
 const getConnection = async (sender, receiver) => {

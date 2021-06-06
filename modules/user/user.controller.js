@@ -1,7 +1,10 @@
 const UserModel = require("./user.model");
 const bcrypt = require("bcryptjs");
+const { saveLocation } = require("../location/location.controller");
 
 const saveUser = async (payload, path) => {
+  let location = { long: payload.lng, lat: payload.lat };
+
   payload = {
     email: payload.email,
     username: payload.username,
@@ -16,7 +19,9 @@ const saveUser = async (payload, path) => {
     let hash = await bcrypt.hash(payload.password, salt);
     payload.password = hash;
     let data = await UserModel.create(payload);
-    return data;
+    data.location = location;
+    let locData = await saveLocation(data);
+    return { username: data.username, user: locData.user };
   }
 };
 
