@@ -9,11 +9,12 @@ const saveUser = async (payload, path) => {
     email: payload.email,
     username: payload.username,
     password: payload.password,
-    image: payload.imagePath,
+    image: payload.image,
   };
   let email = await UserModel.findOne({ email: payload.email }).exec();
-  if (email) {
-    return Promise.resolve({ message: "User Already Exists" });
+  let username = await UserModel.findOne({ username: payload.username }).exec();
+  if (email || username) {
+    return Promise.resolve({ message: "Username or Email Already Exists" });
   } else {
     let salt = await bcrypt.genSalt(10);
     let hash = await bcrypt.hash(payload.password, salt);
