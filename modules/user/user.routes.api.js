@@ -51,7 +51,26 @@ router.post("/register", async (req, res, next) => {
   //await verification by email
   // email, username, password, picture
   let data = await Controller.saveUser(req.body);
-  res.json(data);
+  if (data.email) {
+    const token = await jwt.sign(
+      {
+        email: data.email,
+        userId: data.user,
+      },
+      config.get("app.secret"),
+      {
+        expiresIn: "48h",
+      }
+    );
+    res.cookie("token", token).status(200).json({
+      message: "Login Successfull",
+      token: token,
+      id: data.id,
+      username: data.username,
+    });
+  } else if (!data.email) {
+    res.status(401).json(data);
+  }
 });
 
 router.post("/login", async (req, res, next) => {
@@ -73,6 +92,7 @@ router.post("/login", async (req, res, next) => {
         message: "Login Successfull",
         token: token,
         id: data.id,
+        username: data.username,
       });
     } else if (!data.email) {
       res.status(401).json(data);

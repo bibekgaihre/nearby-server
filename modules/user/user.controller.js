@@ -22,14 +22,17 @@ const saveUser = async (payload, path) => {
     let data = await UserModel.create(payload);
     data.location = location;
     let locData = await saveLocation(data);
-    return { username: data.username, user: locData.user };
+    return {
+      username: data.username,
+      user: locData.user,
+      email: payload.email,
+    };
   }
 };
 
 const checkAuth = async (payload) => {
   let user = await UserModel.findOne({ email: payload.email }).exec();
   if (!user) {
-    console.log("incorrect");
     return Promise.resolve({
       message: "Email or Password is incorrect. Please try again",
     });

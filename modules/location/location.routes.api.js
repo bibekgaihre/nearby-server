@@ -16,10 +16,10 @@ router.post("/", secureAPI(), async (req, res) => {
   //post the user location Lon, Lat
 });
 
-router.post("/nearbyUsers", secureAPI(), async (req, res) => {
+router.get("/nearbyUsers/:id", secureAPI(), async (req, res) => {
   try {
-    let payload = req.body;
-    let data = await locationController.getNearbyUsers(payload);
+    let id = req.params.id;
+    let data = await locationController.getNearbyUsers(id);
     res.json(data);
   } catch (error) {
     console.log(error);
