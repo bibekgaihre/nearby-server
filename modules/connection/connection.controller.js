@@ -56,7 +56,8 @@ const acceptRequest = async (receiver, sender) => {
   let payload = { status: "active" };
   let data = await connectionModel.findOneAndUpdate(
     { user: [sender, receiver] },
-    payload
+    payload,
+    { new: true }
   );
   return data;
 };

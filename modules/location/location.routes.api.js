@@ -2,8 +2,9 @@ const router = require("express").Router();
 const config = require("config");
 const secureAPI = require("../../utils/secureAPI");
 const locationController = require("./location.controller");
+const CheckAPIKey = require("../../utils/checkApiKey");
 
-router.get("/:id", secureAPI(), async (req, res) => {
+router.get("/:id", secureAPI(), CheckAPIKey(), async (req, res) => {
   try {
     let data = await locationController.getLocation(req.params.id);
     res.json(data);
@@ -16,7 +17,7 @@ router.post("/", secureAPI(), async (req, res) => {
   //post the user location Lon, Lat
 });
 
-router.get("/nearbyUsers/:id", secureAPI(), async (req, res) => {
+router.get("/nearbyUsers/:id", secureAPI(), CheckAPIKey(), async (req, res) => {
   try {
     let id = req.params.id;
     let data = await locationController.getNearbyUsers(id);

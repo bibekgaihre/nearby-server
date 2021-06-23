@@ -1,13 +1,15 @@
 const UserModel = require("./user.model");
 const bcrypt = require("bcryptjs");
 const { saveLocation } = require("../location/location.controller");
+const { v4 } = require("uuid");
 
 const saveUser = async (payload, path) => {
   let location = { long: payload.lng, lat: payload.lat };
-
+  const apiKey = v4();
   payload = {
     email: payload.email,
     username: payload.username,
+    apiKey: apiKey,
     password: payload.password,
     image: payload.image,
   };
@@ -16,8 +18,7 @@ const saveUser = async (payload, path) => {
   if (email || username) {
     return Promise.resolve({ message: "Username or Email Already Exists" });
   } else {
-    let salt = await bcrypt.genSalt(10);
-    let hash = await bcrypt.hash(payload.password, salt);
+    let hash = await hashPassword(payload.password);
     payload.password = hash;
     let data = await UserModel.create(payload);
     data.location = location;
@@ -25,9 +26,16 @@ const saveUser = async (payload, path) => {
     return {
       username: data.username,
       user: locData.user,
+      apiKey: apiKey,
       email: payload.email,
     };
   }
+};
+
+const hashPassword = async (password) => {
+  let salt = await bcrypt.genSalt(10);
+  let hash = await bcrypt.hash(password, salt);
+  return hash;
 };
 
 const checkAuth = async (payload) => {
@@ -51,13 +59,14 @@ const getUser = async (payload) => {
   return user;
 };
 
-const updateUser = async (payload, path, id) => {
+const updateUser = async (payload, id) => {
   payload = {
     username: payload.username,
-    phone: payload.phone,
-    image: path,
+    password: payload.password,
+    image: payload.image,
   };
-  console.log(payload);
+  let hash = await hashPassword(payload.password);
+  payload.password = hash;
   let data = await UserModel.findOneAndUpdate({ _id: id }, { $set: payload });
   return data;
 };

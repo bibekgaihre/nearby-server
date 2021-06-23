@@ -6,6 +6,7 @@ const multer = require("multer");
 const Controller = require("./user.controller");
 
 const SecureAPI = require("../../utils/secureAPI");
+const CheckAPIKey = require("../../utils/checkApiKey");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -26,7 +27,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-router.get("/:id", SecureAPI(), async (req, res, next) => {
+router.get("/:id", SecureAPI(), CheckAPIKey(), async (req, res, next) => {
   let data = await Controller.getUser(req.params.id);
   res.json(data);
 });
@@ -37,14 +38,19 @@ router.get("/:id", SecureAPI(), async (req, res, next) => {
 
 // router.get("");
 
-router.post("/update/:id", SecureAPI(), async (req, res, next) => {
-  let data = await Controller.updateUser(
-    req.body,
-    req.file.path,
-    req.params.id
-  );
-  res.json(data);
-});
+router.put(
+  "/update/:id",
+  SecureAPI(),
+  CheckAPIKey(),
+  async (req, res, next) => {
+    try {
+      let data = await Controller.updateUser(req.body, req.params.id);
+      res.json(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
 
 router.post("/register", async (req, res, next) => {
   //data :
@@ -66,6 +72,7 @@ router.post("/register", async (req, res, next) => {
       message: "Login Successfull",
       token: token,
       id: data.id,
+      apiKey: data.apiKey,
       username: data.username,
     });
   } else if (!data.email) {
@@ -92,6 +99,7 @@ router.post("/login", async (req, res, next) => {
         message: "Login Successfull",
         token: token,
         id: data.id,
+        apiKey: data.apiKey,
         username: data.username,
       });
     } else if (!data.email) {

@@ -2,6 +2,7 @@ const router = require("express").Router();
 const config = require("config");
 const userController = require("../user/user.controller");
 const SecureAPI = require("../../utils/secureAPI");
+const CheckApiKey = require("../../utils/checkApiKey");
 
 const connectionController = require("./connection.controller");
 
@@ -15,21 +16,26 @@ router.get("/:id/added", async (req, res, next) => {
   res.json(data);
 });
 
-router.post("/add/:id", SecureAPI(), async (req, res, next) => {
+router.post("/add/:id", SecureAPI(), CheckApiKey(), async (req, res, next) => {
   let data = await connectionController.addFriend(
     req.params.id,
-    req.body.connectionid
+    req.body.connectionId
   );
   res.json(data);
 });
 
-router.patch("/accept/:id", SecureAPI(), async (req, res, next) => {
-  let data = await connectionController.acceptRequest(
-    req.params.id,
-    req.body.connectionid
-  );
-  res.json(data);
-});
+router.patch(
+  "/accept/:id",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let data = await connectionController.acceptRequest(
+      req.params.id,
+      req.body.connectionId
+    );
+    res.json(data);
+  }
+);
 
 router.delete("/cancel/:id", SecureAPI(), async (req, res, next) => {
   let data = await connectionController.cancelRequest(

@@ -17,7 +17,7 @@ const UserSchema = mongoose.Schema(
       type: String,
       unique: true,
     },
-    token: {
+    apiKey: {
       type: String,
     },
     isActive: {
