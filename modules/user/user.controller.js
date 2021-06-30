@@ -26,6 +26,7 @@ const saveUser = async (payload, path) => {
     return {
       username: data.username,
       user: locData.user,
+      id: data.id,
       apiKey: apiKey,
       email: payload.email,
     };

@@ -84,8 +84,10 @@ const processUser = async (data, id) => {
   let processedData = [];
 
   data.forEach((element) => {
-    if (element.user._id != id) {
-      processedData.push(element);
+    if (element.user) {
+      if (element.user._id != id) {
+        processedData.push(element);
+      }
     }
   });
   return processedData;
