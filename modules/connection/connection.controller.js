@@ -1,5 +1,7 @@
 // const { compareSync } = require("bcryptjs");
+const mongoose = require("mongoose");
 const connectionModel = require("./connection.model");
+const userModel = require("../user/user.model");
 
 const getConnection = async (sender, receiver) => {
   let data = await connectionModel.findOne({
@@ -21,6 +23,105 @@ const addFriend = async (sender, receiver) => {
     { upsert: true, new: true }
   );
   return data;
+};
+
+const listSentRequests = async (sender) => {
+  let data = await connectionModel.aggregate([
+    {
+      $match: {
+        "user.0": mongoose.Types.ObjectId(sender),
+        status: "pending",
+      },
+    },
+    {
+      $project: {
+        connection: { $arrayElemAt: ["$user", 1] },
+      },
+    },
+    {
+      $lookup: {
+        from: "user",
+        localField: "connection",
+        foreignField: "_id",
+        as: "users",
+      },
+    },
+    {
+      $unwind: "$users",
+    },
+    {
+      $project: {
+        _id: 0,
+        username: "$users.username",
+        userid: "$users._id",
+        image: "$users.image",
+      },
+    },
+  ]);
+  return data;
+};
+
+const listIncomingRequests = async (receiver) => {
+  let data = await connectionModel.aggregate([
+    {
+      $match: {
+        "user.1": mongoose.Types.ObjectId(receiver),
+        status: "pending",
+      },
+    },
+    {
+      $project: {
+        connection: { $arrayElemAt: ["$user", 0] },
+      },
+    },
+    {
+      $lookup: {
+        from: "user",
+        localField: "connection",
+        foreignField: "_id",
+        as: "users",
+      },
+    },
+    {
+      $unwind: "$users",
+    },
+    {
+      $project: {
+        _id: 0,
+        username: "$users.username",
+        userid: "$users._id",
+        image: "$users.image",
+      },
+    },
+  ]);
+  return data;
+};
+
+const listFriends = async (id) => {
+  let data = await connectionModel.find(
+    {
+      user: { $in: id },
+      status: "active",
+    },
+    { user: 1 }
+  );
+  let friends = [];
+  for await (let element of data) {
+    if (element.user[0] != id) {
+      friends.push(element.user[0]);
+    } else if (element.user[1] != id) {
+      friends.push(element.user[1]);
+    }
+  }
+  let connection = [];
+  for await (let element of friends) {
+    let user = await userModel.findOne(
+      { _id: element },
+      { username: 1, _id: 1, image: 1 }
+    );
+    connection.push(user);
+  }
+  return connection;
 };
 
 const searchFriend = async (id) => {
@@ -62,10 +163,13 @@ const acceptRequest = async (receiver, sender) => {
   return data;
 };
 
-module.exports = {
+const filterUser = (module.exports = {
   addFriend,
   searchFriend,
   acceptRequest,
   cancelRequest,
   getConnection,
-};
+  listSentRequests,
+  listIncomingRequests,
+  listFriends,
+});

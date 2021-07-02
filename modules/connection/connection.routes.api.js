@@ -16,6 +16,54 @@ router.get("/:id/added", async (req, res, next) => {
   res.json(data);
 });
 
+//list friend request
+router.post(
+  "/:id/incomingrequests",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let receiver = req.params.id;
+    try {
+      let data = await connectionController.listIncomingRequests(receiver);
+      res.json(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+//list sent friend request
+router.post(
+  "/:id/sentrequests",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let sender = req.params.id;
+    try {
+      let data = await connectionController.listSentRequests(sender);
+      res.json(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+//list all friends
+router.post(
+  "/:id/friends",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let id = req.params.id;
+    try {
+      let data = await connectionController.listFriends(id);
+      res.json(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
 router.post("/add/:id", SecureAPI(), CheckApiKey(), async (req, res, next) => {
   let data = await connectionController.addFriend(
     req.params.id,
@@ -24,6 +72,7 @@ router.post("/add/:id", SecureAPI(), CheckApiKey(), async (req, res, next) => {
   res.json(data);
 });
 
+//accept friend request
 router.patch(
   "/accept/:id",
   SecureAPI(),
