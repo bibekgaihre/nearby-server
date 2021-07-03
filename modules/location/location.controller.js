@@ -1,4 +1,5 @@
 const locationModel = require("./location.model");
+const connectionModel = require("../connection/connection.model");
 const mongoose = require("mongoose");
 
 const saveLocation = async (payload) => {
@@ -20,7 +21,6 @@ const getNearbyUsers = async (id) => {
   let locationdata = await locationModel.findOne({
     user: mongoose.Types.ObjectId(id),
   });
-
   let data = await locationModel
     .find({
       location: {
@@ -55,7 +55,35 @@ const getNearbyUsers = async (id) => {
       image: element.user.image || null,
     };
   });
-  return result;
+
+  let response = await checkConnection(result, id);
+  return response;
+};
+
+const checkConnection = async (result, id) => {
+  let filteredlist = [];
+
+  for await (let element of result) {
+    let connection = await connectionModel.findOne({
+      $and: [
+        {
+          user: {
+            $in: [mongoose.Types.ObjectId(element.id)],
+          },
+        },
+        {
+          user: {
+            $in: [mongoose.Types.ObjectId(id)],
+          },
+        },
+      ],
+      status: "active",
+    });
+    if (!connection) {
+      filteredlist.push(element);
+    }
+  }
+  return filteredlist;
 };
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
