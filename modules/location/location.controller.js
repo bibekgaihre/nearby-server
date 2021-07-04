@@ -77,7 +77,7 @@ const checkConnection = async (result, id) => {
           },
         },
       ],
-      status: "active",
+      $or: [{ status: { $in: ["active"] } }, { status: { $in: ["pending"] } }],
     });
     if (!connection) {
       filteredlist.push(element);

@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const connectionModel = require("./connection.model");
 const userModel = require("../user/user.model");
+const locationController = require("../location/location.controller");
 
 const getConnection = async (sender, receiver) => {
   let data = await connectionModel.findOne({
@@ -22,7 +23,14 @@ const addFriend = async (sender, receiver) => {
     payload,
     { upsert: true, new: true }
   );
-  return data;
+  if (data) {
+    let result = await locationController.getNearbyUsers(sender);
+    result = {
+      status: "friend request sent",
+      data: result,
+    };
+    return result;
+  }
 };
 
 const listSentRequests = async (sender) => {
