@@ -66,7 +66,11 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 let server = http.createServer(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: `http://localhost:${process.env.FRONTENDPORT}`,
+  },
+});
 io.on("connection", (socket) => {
   /* … */
   socket.on("findmessage", async (data) => {

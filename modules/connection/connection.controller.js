@@ -127,6 +127,7 @@ const listFriends = async (id) => {
       { _id: element },
       { username: 1, _id: 1, image: 1 }
     );
+    console.log(user);
     connection.push(user);
   }
   return connection;
