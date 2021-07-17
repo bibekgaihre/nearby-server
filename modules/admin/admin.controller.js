@@ -28,4 +28,4 @@ const blockUserById = async (id) => {};
 
 const unBlockUserById = async (id) => {};
 
-module.exports = { getUsers, getUserById, blockUserById };
+module.exports = { getUsers, getUserById, blockUserById,unBlockUserById };

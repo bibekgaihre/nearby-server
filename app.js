@@ -68,8 +68,12 @@ app.use(function (err, req, res, next) {
 let server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: `http://localhost:${process.env.FRONTENDPORT}`,
+    origin: `http://localhost:${config.get("app.frontendport")}`,
+    methods: ["GET", "POST"],
+    credentials: true,
+    transports: ["websocket", "polling"],
   },
+  allowEIO3: true,
 });
 io.on("connection", (socket) => {
   /* … */

@@ -3,7 +3,8 @@
       "name": "chat-app",
       "port": 3000,
       "secret": "enter random alphanumeric characters",
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000",
+      "frontendport":"8080"
     },
     "db": {
       "url": "mongodb://localhost:27017/nearbychat"
