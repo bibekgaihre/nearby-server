@@ -5,10 +5,15 @@ const CheckApiKey = require("../../utils/checkApiKey");
 
 const conversationController = require("./conversation.controller");
 
-router.post("/getallconversations/:id", async (req, res, next) => {
-  let payload = req.body;
-  let data = await conversationController.getAllMessage(payload);
-  res.json(data);
-});
+router.post(
+  "/getallconversations/:id",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let payload = req.body;
+    let data = await conversationController.getAllMessage(payload);
+    res.json(data);
+  }
+);
 
 module.exports = router;
