@@ -4,7 +4,7 @@ const ConversationSchema = mongoose.Schema(
   {
     connection: {
       type: mongoose.Schema.ObjectId,
-      ref: "Connection",
+      ref: "User",
     },
     value: {
       type: String,

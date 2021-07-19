@@ -32,7 +32,11 @@ const getAllMessage = async (payload) => {
         { sender: receiver, connection: sender },
       ],
     })
-    .sort({ created_at: -1 });
+    .sort({ created_at: -1 })
+    .populate("connection", "username image")
+    .populate("sender", "username image");
+  console.log(data);
+
   return data;
 };
 
