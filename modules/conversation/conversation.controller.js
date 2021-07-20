@@ -1,4 +1,5 @@
 const conversationModel = require("./conversation.model");
+const userModel = require("../user/user.model");
 
 const getMessage = async (payload) => {
   let message = await conversationModel
@@ -8,7 +9,6 @@ const getMessage = async (payload) => {
     .limit(100)
     .sort({ created_at: -1 })
     .populate("connectionid", "username image");
-
   return message;
 };
 const createMessage = async (payload) => {
@@ -35,9 +35,32 @@ const getAllMessage = async (payload) => {
     .sort({ created_at: -1 })
     .populate("connection", "username image")
     .populate("sender", "username image");
-  console.log(data);
 
   return data;
 };
 
-module.exports = { getMessage, createMessage, getAllMessage };
+const getProperMessageFormat = async (payload) => {
+  let sender = await userModel.findOne({ _id: payload.sender });
+  let connection = await userModel.findOne({ _id: payload.connection });
+  let data = {
+    connection: {
+      username: connection.username,
+      image: connection.image,
+    },
+    value: payload.value,
+    sender: {
+      username: sender.username,
+      image: sender.image,
+    },
+    created_at: payload.created_at,
+    updated_at: payload.updated_at,
+  };
+  return data;
+};
+
+module.exports = {
+  getMessage,
+  createMessage,
+  getAllMessage,
+  getProperMessageFormat,
+};

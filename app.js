@@ -79,11 +79,12 @@ io.on("connection", (socket) => {
   /* … */
   socket.on("findmessage", async (data) => {
     let message = await conversationController.getMessage(data);
-    socket.emit("output", message);
+    socket.emit("SOCKET_output", message);
   });
   socket.on("sendmessage", async function (data) {
     let message = await conversationController.createMessage(data);
-    io.emit("output", [message]);
+    let response = await conversationController.getProperMessageFormat(message);
+    io.emit("output", [response]);
   });
 });
 
