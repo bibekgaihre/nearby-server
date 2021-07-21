@@ -77,32 +77,47 @@ router.get("/blocklist/:id", SecureAPI(), CheckApiKey(), async (req, res) => {
   res.json(data);
 });
 
-router.post("/block/:id", async (req, res, next) => {
-  let data = await connectionController.blockFriend(
-    req.params.id,
-    req.body.blockeduser
-  );
-  res.json(data);
-});
+router.post(
+  "/block/:id",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let data = await connectionController.blockFriend(
+      req.params.id,
+      req.body.blockeduser
+    );
+    res.json(data);
+  }
+);
 
-router.delete("/unblock/:id", async (req, res, next) => {
-  let data = await connectionController.unblockFriend(
-    req.params.id,
-    req.body.blockeduser
-  );
-  res.json(data);
-});
+router.delete(
+  "/unblock/:id",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let data = await connectionController.unblockFriend(
+      req.params.id,
+      req.body.blockeduser
+    );
+    res.json(data);
+  }
+);
 
-router.post("/report/:id", async (req, res, next) => {
-  let { category, message, reporteduser } = req.body;
-  let data = await connectionController.reportUser(
-    req.params.id,
-    reporteduser,
-    category,
-    message
-  );
-  res.json(data);
-});
+router.post(
+  "/report/:id",
+  SecureAPI(),
+  CheckApiKey(),
+  async (req, res, next) => {
+    let { category, message, reporteduser } = req.body;
+    let data = await connectionController.reportUser(
+      req.params.id,
+      reporteduser,
+      category,
+      message
+    );
+    res.json(data);
+  }
+);
 
 //accept friend request
 router.patch(
