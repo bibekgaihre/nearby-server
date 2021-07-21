@@ -10,6 +10,9 @@ const ReportSchema = mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
+    reportCategory: {
+      type: String,
+    },
     reportMessage: {
       type: String,
     },

@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const connectionModel = require("./connection.model");
 const userModel = require("../user/user.model");
 const locationController = require("../location/location.controller");
+const blockModel = require("./block.model");
+const reportModel = require("./report.model");
 
 const getConnection = async (sender, receiver) => {
   let data = await connectionModel.findOne({
@@ -127,8 +129,10 @@ const listFriends = async (id) => {
       { _id: element },
       { username: 1, _id: 1, image: 1 }
     );
-    console.log(user);
-    connection.push(user);
+    let block = await checkBlocked(id, element);
+    if (!block) {
+      connection.push(user);
+    }
   }
   return connection;
 };
@@ -172,13 +176,78 @@ const acceptRequest = async (receiver, sender) => {
   return data;
 };
 
-const filterUser = (module.exports = {
+const blockFriend = async (blockedBy, blockedUser) => {
+  let data = await blockModel.findOneAndUpdate(
+    {
+      blockedBy: blockedBy,
+      blockedUser: blockedUser,
+    },
+    { blockedBy: blockedBy, blockedUser: blockedUser },
+    { upsert: true, new: true }
+  );
+  return data;
+};
+
+const unblockFriend = async (blockedBy, blockedUser) => {
+  let data = await blockModel.deleteOne({
+    blockedBy: blockedBy,
+    blockedUser: blockedUser,
+  });
+  return data;
+};
+
+const blockedList = async (blockedBy) => {
+  let data = await blockModel
+    .find({ blockedBy: blockedBy })
+    .populate("blockedUser", "username image");
+  data = data.map((d) => {
+    console.log(d);
+    return {
+      _id: d.blockedUser._id,
+      username: d.blockedUser.username,
+      image: d.blockedUser.image,
+    };
+  });
+  return data;
+};
+
+const reportUser = async (reportedBy, reportedUser, category, message) => {
+  let data = await reportModel.findOneAndUpdate(
+    { reportedBy: reportedBy, reportedUser: reportedUser },
+    {
+      reportCategory: category,
+      reportMessage: message,
+      reportedOn: Date.now(),
+    },
+    { upsert: true, new: true }
+  );
+  return data;
+};
+
+const checkBlocked = async (user1, user2) => {
+  let data = await blockModel.findOne({
+    $or: [
+      { blockedBy: user1, blockedUser: user2 },
+      { blockedBy: user2, blockedUser: user1 },
+    ],
+  });
+  if (data) {
+    return true;
+  } else {
+    return false;
+  }
+};
+module.exports = {
   addFriend,
   searchFriend,
   acceptRequest,
   cancelRequest,
   getConnection,
+  blockFriend,
+  unblockFriend,
+  blockedList,
+  reportUser,
   listSentRequests,
   listIncomingRequests,
   listFriends,
-});
+};

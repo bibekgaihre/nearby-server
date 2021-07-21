@@ -17,7 +17,7 @@ router.get("/:id/added", async (req, res, next) => {
 });
 
 //list friend request
-router.post(
+router.get(
   "/:id/incomingrequests",
   SecureAPI(),
   CheckApiKey(),
@@ -33,7 +33,7 @@ router.post(
 );
 
 //list sent friend request
-router.post(
+router.get(
   "/:id/sentrequests",
   SecureAPI(),
   CheckApiKey(),
@@ -49,7 +49,7 @@ router.post(
 );
 
 //list all friends
-router.post(
+router.get(
   "/:id/friends",
   SecureAPI(),
   CheckApiKey(),
@@ -68,6 +68,38 @@ router.post("/add/:id", SecureAPI(), CheckApiKey(), async (req, res, next) => {
   let data = await connectionController.addFriend(
     req.params.id,
     req.body.connectionId
+  );
+  res.json(data);
+});
+
+router.get("/blocklist/:id", SecureAPI(), CheckApiKey(), async (req, res) => {
+  let data = await connectionController.blockedList(req.params.id);
+  res.json(data);
+});
+
+router.post("/block/:id", async (req, res, next) => {
+  let data = await connectionController.blockFriend(
+    req.params.id,
+    req.body.blockeduser
+  );
+  res.json(data);
+});
+
+router.delete("/unblock/:id", async (req, res, next) => {
+  let data = await connectionController.unblockFriend(
+    req.params.id,
+    req.body.blockeduser
+  );
+  res.json(data);
+});
+
+router.post("/report/:id", async (req, res, next) => {
+  let { category, message, reporteduser } = req.body;
+  let data = await connectionController.reportUser(
+    req.params.id,
+    reporteduser,
+    category,
+    message
   );
   res.json(data);
 });
