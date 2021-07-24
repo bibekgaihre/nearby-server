@@ -88,7 +88,7 @@ const checkConnection = async (result, id) => {
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   if (lat1 == lat2 && lon1 == lon2) {
-    return 0;
+    return 1;
   } else {
     var radlat1 = (Math.PI * lat1) / 180;
     var radlat2 = (Math.PI * lat2) / 180;

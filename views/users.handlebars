@@ -15,35 +15,12 @@
       <div class="col-md-3 mb-3"></div>
 
       <div class="col-md-3 mb-3">
-        <button
-          type="button"
-          class="btn btn-md btn-warning"
-          onclick="location.href='/users/create'"
-          title="Send Notification"
-          style="margin: 0 auto"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-mailbox2"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M9 8.5h2.793l.853.854A.5.5 0 0 0 13 9.5h1a.5.5 0 0 0 .5-.5V8a.5.5 0 0 0-.5-.5H9v1z"
-            />
-            <path
-              d="M12 3H4a4 4 0 0 0-4 4v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7a4 4 0 0 0-4-4zM8 7a3.99 3.99 0 0 0-1.354-3H12a3 3 0 0 1 3 3v6H8V7zm-3.415.157C4.42 7.087 4.218 7 4 7c-.218 0-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0c0 .334-.164.264-.415.157z"
-            />
-          </svg>
-          Create Article
-        </button>
+       
       </div>
     </div>
 
     <div class="table-responsive">
-      <table class="table table-striped table-sm" id="articles_datatable">
+      <table class="table table-striped table-sm" id="users_datatable">
         <thead>
           <tr>
             <th>Username</th>
@@ -64,6 +41,7 @@
 <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", (event) => {
+
     $("#users_datatable").DataTable({
       searching: false,
       pageLength: 10,
@@ -81,9 +59,10 @@
         "<'row'<'col-sm-5'i><'col-sm-7'<'float-right p-2'p>>>",
       ajax: {
         url: "/api/admin/get-users",
-        // headers: { Authorization: "Bearer " + Cookies.get("token") },
+        headers: { Authorization: "Bearer " + Cookies.get("token") },
         method: "GET",
         dataFilter: (data) => {
+
           let json = JSON.parse(data);
           json.recordsTotal = json.total;
           json.recordsFiltered = json.total;
@@ -106,13 +85,6 @@
           class: "text-center",
         },
         {
-          data: null,
-          class: "text-center",
-          render: (d, type, row, meta) => {
-            return `${new Date(d.created_at)}`;
-          },
-        },
-        {
           data: "tag",
           class: "text-center",
         },
@@ -120,7 +92,15 @@
           data: null,
           class: "text-center",
           render: (d, type, row, meta) => {
-            if (d.isPublic === true) {
+            return `${new Date(d.created_at)}`;
+          },
+        },
+      
+        {
+          data: null,
+          class: "text-center",
+          render: (d, type, row, meta) => {
+            if (d.isActive === true) {
               return `<svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
       </svg>`;

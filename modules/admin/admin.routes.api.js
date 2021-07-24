@@ -5,6 +5,7 @@ const secureAPI = require("../../utils/secureAPI");
 //get all users list
 router.get("/get-users", async (req, res) => {
   try {
+    console.log("here");
     const start = parseInt(req.query.start) || 0;
     const limit = parseInt(req.query.limit) || 10;
     let data = await adminController.getUsers(start, limit);
