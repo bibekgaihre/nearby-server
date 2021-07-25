@@ -90,7 +90,7 @@ router.post(
   }
 );
 
-router.delete(
+router.post(
   "/unblock/:id",
   SecureAPI(),
   CheckApiKey(),

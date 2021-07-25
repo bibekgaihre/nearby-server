@@ -1,6 +1,5 @@
 const router = require("express").Router();
-const config = require("config");
-const avatarController = require("../avatars/avatars.controller");
+
 const axios = require("axios");
 
 router.get("/", async (req, res, next) => {

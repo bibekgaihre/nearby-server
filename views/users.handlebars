@@ -26,7 +26,7 @@
             <th>Username</th>
             <th>Image</th>
             <th>Registered on</th>
-            <th>Verified</th>
+            <th>Active</th>
             <th>Options</th>
           </tr>
         </thead>
@@ -36,6 +36,20 @@
   </main>
 </div>
 {{> foot}}
+<style>
+  img {
+    border: 1px solid #ddd; /* Gray border */
+    border-radius: 4px;  /* Rounded border */
+    padding: 5px; /* Some padding */
+    width: 30; /* Set a small width */
+  }
+  
+  /* Add a hover effect (blue shadow) */
+  img:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+  }
+  </style>
+  
 <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
 <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
@@ -85,14 +99,20 @@
           class: "text-center",
         },
         {
-          data: "tag",
+          data: null,
           class: "text-center",
+          render:(d,type,row,meta)=>{
+            return ` <img src="${d.image}" alt="profile">`
+          }
         },
         {
           data: null,
           class: "text-center",
           render: (d, type, row, meta) => {
-            return `${new Date(d.created_at)}`;
+            let date=new Date(d.created_at);
+            date=date.toString();
+            date=date.replace("GMT+0200 (Central European Summer Time)","");
+            return `${date}`;
           },
         },
       
@@ -123,10 +143,11 @@
             d="M4.5 1A1.5 1.5 0 0 0 3 2.5V3h4v-.5A1.5 1.5 0 0 0 5.5 1h-1zM7 4v1h2V4h4v.882a.5.5 0 0 0 .276.447l.895.447A1.5 1.5 0 0 1 15 7.118V13H9v-1.5a.5.5 0 0 1 .146-.354l.854-.853V9.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v.793l.854.853A.5.5 0 0 1 7 11.5V13H1V7.118a1.5 1.5 0 0 1 .83-1.342l.894-.447A.5.5 0 0 0 3 4.882V4h4zM1 14v.5A1.5 1.5 0 0 0 2.5 16h3A1.5 1.5 0 0 0 7 14.5V14H1zm8 0v.5a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5V14H9zm4-11H9v-.5A1.5 1.5 0 0 1 10.5 1h1A1.5 1.5 0 0 1 13 2.5V3z" />
     </svg>
 </button>
-<button type="button" id="deletebtn" data-id="${d._id}" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-outline-danger" 
-    title="Delete">
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+<button type="button" id="terminatebtn" data-id="${d._id}" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#terminateModal" class="btn btn-sm btn-outline-danger" 
+    title="Terminate">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+  <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+  <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
 </svg>
 </button>
 `;
@@ -139,7 +160,7 @@
 
 <div
   class="modal fade"
-  id="deleteModal"
+  id="terminateModal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="exampleModalCenterTitle"
@@ -148,7 +169,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Delete Article</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Terminate User</h5>
         <button
           type="button"
           class="close"
@@ -159,8 +180,8 @@
         </button>
       </div>
       <div class="modal-body">
-        Are you sure you want to Remove this Article ?
-        <span id="delete-modal-id" hidden></span>
+        Are you sure you want to Terminate this Account ?
+        <span id="terminate-modal-id" hidden></span>
       </div>
       <div class="modal-footer">
         <button
@@ -170,20 +191,12 @@
         >
           No
         </button>
-        <button type="button" class="btn btn-outline-danger" id="btnDelete">
-          <svg
-            width="1em"
-            height="1em"
-            viewBox="0 0 16 16"
-            class="bi bi-trash-fill"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"
-            /></svg
-          >Remove
+        <button type="button" class="btn btn-outline-danger" id="btnTerminate">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+          </svg>
+          Terminate
         </button>
       </div>
     </div>
@@ -192,7 +205,7 @@
 
 <div
   class="modal fade"
-  id="success-remove-modal"
+  id="success-terminate-modal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="exampleModalLongTitle"
@@ -205,7 +218,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">
-          Successfully Removed
+          Successfully Terminated Account
         </h5>
         <button
           type="button"
@@ -216,33 +229,33 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">The Article has been removed Successfully.</div>
+      <div class="modal-body">The User account has been terminated Successfully.</div>
     </div>
   </div>
 </div>
 
 <script>
-  $(document).on("click", "#deletebtn", function () {
+  $(document).on("click", "#terminatebtn", function () {
     let id = $(this).data("id");
-    document.getElementById("delete-modal-id").innerHTML = id;
+    document.getElementById("terminate-modal-id").innerHTML = id;
   });
-  document.getElementById("btnDelete").addEventListener("click", () => {
-    let id = document.getElementById("delete-modal-id").innerText;
-    fetch(`/api/v1/blogs/${id}`, {
-      method: "DELETE",
+  document.getElementById("btnTerminate").addEventListener("click", () => {
+    let id = document.getElementById("terminate-modal-id").innerText;
+    fetch(`/api/admin/block-user/${id}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + Cookies.get("token"),
+        // Authorization: "Bearer " + Cookies.get("token"),
       },
     }).then((response) => {
       if (response.ok) {
-        $("#deleteModal").modal("hide");
+        $("#terminateModal").modal("hide");
         setTimeout(function () {
-          $("#success-remove-modal").modal("show");
+          $("#success-terminate-modal").modal("show");
         }, 300);
-        $("#articles_datatable").DataTable().ajax.reload(null, false);
+        $("#users_datatable").DataTable().ajax.reload(null, false);
         setTimeout(function () {
-          $("#success-remove-modal").modal("hide");
+          $("#success-terminate-modal").modal("hide");
         }, 2000);
       }
     });
