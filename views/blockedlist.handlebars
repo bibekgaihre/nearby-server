@@ -9,7 +9,7 @@
     </div>
     <div class="row">
       <div class="col-md-3 mb-3">
-        <h3 class="heading">Users</h3>
+        <h3 class="heading">Terminated Users</h3>
       </div>
       <div class="col-md-3 mb-3"></div>
       <div class="col-md-3 mb-3"></div>
@@ -20,12 +20,11 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table table-striped table-sm" id="users_datatable">
+      <table class="table table-striped table-sm" id="terminated_datatable">
         <thead>
           <tr>
             <th>Username</th>
             <th>Image</th>
-            <th>Registered on</th>
             <th>Active</th>
             <th>Options</th>
           </tr>
@@ -36,19 +35,6 @@
   </main>
 </div>
 {{> foot}}
-<style>
-  img {
-    border: 1px solid #ddd; /* Gray border */
-    border-radius: 4px;  /* Rounded border */
-    padding: 5px; /* Some padding */
-    width: 30; /* Set a small width */
-  }
-  
-  /* Add a hover effect (blue shadow) */
-  img:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
-  }
-  </style>
   
 <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
 <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
@@ -56,7 +42,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", (event) => {
 
-    $("#users_datatable").DataTable({
+    $("#terminated_datatable").DataTable({
       searching: false,
       pageLength: 10,
       processing: true,
@@ -72,11 +58,10 @@
         "<'row'<'col-sm-12'tr>>" +
         "<'row'<'col-sm-5'i><'col-sm-7'<'float-right p-2'p>>>",
       ajax: {
-        url: "/api/admin/get-users",
-        headers: { Authorization: "Bearer " + Cookies.get("token") },
+        url: "/api/admin/blocked-list",
+        // headers: { Authorization: "Bearer " + Cookies.get("token") },
         method: "GET",
         dataFilter: (data) => {
-
           let json = JSON.parse(data);
           json.recordsTotal = json.total;
           json.recordsFiltered = json.total;
@@ -106,18 +91,7 @@
           }
         },
         {
-          data: null,
-          class: "text-center",
-          render: (d, type, row, meta) => {
-            let date=new Date(d.created_at);
-            date=date.toString();
-            date=date.replace("GMT+0200 (Central European Summer Time)","");
-            return `${date}`;
-          },
-        },
-      
-        {
-          data: null,
+            data: null,
           class: "text-center",
           render: (d, type, row, meta) => {
             if (d.isActive === true) {
@@ -135,27 +109,15 @@
           data: null,
           class: "text-center",
           render: (d, type, row, meta) => {
-            if(d.isActive===false){
-              return "";
-            }
-            return `<button type="button" class="btn btn-sm btn-outline-primary" onclick="window.location.replace('/blogs/${d._id}')"
-    title="View">
-    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-binoculars-fill" fill="currentColor"
-        xmlns="http://www.w3.org/2000/svg">
-        <path
-            d="M4.5 1A1.5 1.5 0 0 0 3 2.5V3h4v-.5A1.5 1.5 0 0 0 5.5 1h-1zM7 4v1h2V4h4v.882a.5.5 0 0 0 .276.447l.895.447A1.5 1.5 0 0 1 15 7.118V13H9v-1.5a.5.5 0 0 1 .146-.354l.854-.853V9.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v.793l.854.853A.5.5 0 0 1 7 11.5V13H1V7.118a1.5 1.5 0 0 1 .83-1.342l.894-.447A.5.5 0 0 0 3 4.882V4h4zM1 14v.5A1.5 1.5 0 0 0 2.5 16h3A1.5 1.5 0 0 0 7 14.5V14H1zm8 0v.5a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5V14H9zm4-11H9v-.5A1.5 1.5 0 0 1 10.5 1h1A1.5 1.5 0 0 1 13 2.5V3z" />
-    </svg>
-</button>
-<button type="button" id="terminatebtn" data-id="${d._id}" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#terminateModal" class="btn btn-sm btn-outline-danger" 
-    title="Terminate">
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-  <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-  <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+            return `<button type="button" id="activebtn" data-id="${d._id}" class="btn btn-success" data-toggle="modal" data-target="#activeModal" class="btn btn-sm btn-outline-danger" 
+    title="Active">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
+  <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+  <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
 </svg>
-</button>
-`;
+</button>`;
           },
-        },
+        }
       ],
     });
   });
@@ -163,7 +125,7 @@
 
 <div
   class="modal fade"
-  id="terminateModal"
+  id="activeModal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="exampleModalCenterTitle"
@@ -172,7 +134,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Terminate User</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Active User</h5>
         <button
           type="button"
           class="close"
@@ -183,8 +145,8 @@
         </button>
       </div>
       <div class="modal-body">
-        Are you sure you want to Terminate this Account ?
-        <span id="terminate-modal-id" hidden></span>
+        Are you sure you want to Active this Account ?
+        <span id="active-modal-id" hidden></span>
       </div>
       <div class="modal-footer">
         <button
@@ -194,12 +156,12 @@
         >
           No
         </button>
-        <button type="button" class="btn btn-outline-danger" id="btnTerminate">
-          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-          </svg>
-          Terminate
+        <button type="button" class="btn btn btn-success" id="btnActive">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
+                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+              </svg>
+          Active
         </button>
       </div>
     </div>
@@ -208,7 +170,7 @@
 
 <div
   class="modal fade"
-  id="success-terminate-modal"
+  id="success-active-modal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="exampleModalLongTitle"
@@ -221,7 +183,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">
-          Successfully Terminated Account
+          Successfully Activated Account
         </h5>
         <button
           type="button"
@@ -232,19 +194,19 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">The User account has been terminated Successfully.</div>
+      <div class="modal-body">The User account has been activated Successfully.</div>
     </div>
   </div>
 </div>
 
 <script>
-  $(document).on("click", "#terminatebtn", function () {
+  $(document).on("click", "#activebtn", function () {
     let id = $(this).data("id");
-    document.getElementById("terminate-modal-id").innerHTML = id;
+    document.getElementById("active-modal-id").innerHTML = id;
   });
-  document.getElementById("btnTerminate").addEventListener("click", () => {
-    let id = document.getElementById("terminate-modal-id").innerText;
-    fetch(`/api/admin/block-user/${id}`, {
+  document.getElementById("btnActive").addEventListener("click", () => {
+    let id = document.getElementById("active-modal-id").innerText;
+    fetch(`/api/admin/unblock-user/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -252,13 +214,13 @@
       },
     }).then((response) => {
       if (response.ok) {
-        $("#terminateModal").modal("hide");
+        $("#activeModal").modal("hide");
         setTimeout(function () {
-          $("#success-terminate-modal").modal("show");
+          $("#success-active-modal").modal("show");
         }, 300);
-        $("#users_datatable").DataTable().ajax.reload(null, false);
+        $("#terminated_datatable").DataTable().ajax.reload(null, false);
         setTimeout(function () {
-          $("#success-terminate-modal").modal("hide");
+          $("#success-active-modal").modal("hide");
         }, 2000);
       }
     });

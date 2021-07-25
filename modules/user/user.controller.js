@@ -48,7 +48,13 @@ const checkAuth = async (payload) => {
   }
   let chkPass = await bcrypt.compare(payload.password, user.password);
   if (chkPass) {
-    return user;
+    if (user.isActive === false) {
+      return Promise.resolve({
+        message: "Your Account is Terminated.",
+      });
+    } else {
+      return user;
+    }
   }
   return Promise.resolve({
     message: "Email or Password is incorrect. Please try again",
