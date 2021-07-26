@@ -6,7 +6,7 @@
   "author": "<bibekgaihre123@outlook.com>",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "build": "npm start"
   },
   "dependencies": {

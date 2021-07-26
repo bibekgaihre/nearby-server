@@ -3,9 +3,10 @@ const bcrypt = require("bcryptjs");
 const { saveLocation } = require("../location/location.controller");
 const { v4 } = require("uuid");
 
-const saveUser = async (payload, path) => {
+const saveUser = async (payload) => {
   let location = { long: payload.lng, lat: payload.lat };
   const apiKey = v4();
+  console.log(apiKey);
   payload = {
     email: payload.email,
     username: payload.username,

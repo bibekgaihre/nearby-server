@@ -27,7 +27,6 @@ const setup = {
       let randomAvatarImage = randomAvatar.images.lg;
       const R = 1000;
       const randomPoint = randomLocation.randomCirclePoint(point, R);
-
       let data = {
         email: faker.internet.email(),
         username:

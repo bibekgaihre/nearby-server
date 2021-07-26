@@ -21,7 +21,7 @@ const exphbs = require("express-handlebars");
 const app = express();
 
 mongoose.connect(
-  config.get("db.url"),
+  "mongodb://mongo:27017/nearbychat",
   {
     useNewUrlParser: true,
     useFindAndModify: false,

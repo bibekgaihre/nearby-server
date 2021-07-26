@@ -1,0 +1,19 @@
+version: "3"
+services:
+  web:
+    container_name: nearbychat-server
+    restart: always
+    ports:
+      - "3000:3000"
+    build: .
+    networks:
+      - personal
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - personal
+networks:
+  personal:
+    driver: bridge
