@@ -1,5 +1,40 @@
 const userModel = require("../user/user.model");
 const reportModel = require("../connection/report.model");
+const authModel = require("./auths.model");
+const bcrypt = require("bcryptjs");
+
+const onCreate = async (payload) => {
+  payload = {
+    email: payload.email,
+    password: payload.password,
+  };
+  let email = await authModel.findOne({ email: payload.email }).exec();
+  if (email) {
+    return Promise.resolve({ message: "Admin Already Exists" });
+  } else {
+    let salt = await bcrypt.genSalt(10);
+    let hash = await bcrypt.hash(payload.password, salt);
+    payload.password = hash;
+    let data = await authModel.create(payload);
+    return data;
+  }
+};
+
+const onLogin = async (payload) => {
+  let admin = await authModel.findOne({ email: payload.email }).exec();
+  if (!admin) {
+    return Promise.resolve({
+      message: "Email or Password is incorrect. Please try again",
+    });
+  }
+  let chkPass = await bcrypt.compare(payload.password, admin.password);
+  if (chkPass) {
+    return admin;
+  }
+  return Promise.resolve({
+    message: "Email or Password is incorrect. Please try again",
+  });
+};
 
 const getUsers = async (start, limit) => {
   let page = parseInt(start) / parseInt(limit) + 1;
@@ -109,4 +144,6 @@ module.exports = {
   unBlockUserById,
   getAllReports,
   getReport,
+  onCreate,
+  onLogin,
 };

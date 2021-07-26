@@ -60,7 +60,7 @@
         "<'row'<'col-sm-5'i><'col-sm-7'<'float-right p-2'p>>>",
       ajax: {
         url: "/api/admin/reports",
-        // headers: { Authorization: "Bearer " + Cookies.get("token") },
+        headers: { Authorization: "Bearer " + Cookies.get("token") },
         method: "GET",
         dataFilter: (data) => {
           let json = JSON.parse(data);
@@ -96,7 +96,7 @@
           data: null,
           class: "text-center",
           render: (d, type, row, meta) => {
-            let date=new Date(d.created_at);
+            let date=new Date(d.updated_at);
             date=date.toString();
             date=date.replace("GMT+0200 (Central European Summer Time)","");
             return `${date}`;
@@ -106,7 +106,7 @@
           data: null,
           class: "text-center",
           render: (d, type, row, meta) => {
-            return `<button type="button" class="btn btn-sm btn-outline-primary" onclick="window.location.replace('/reports/${d._id}')"
+            return `<button type="button" id="reportbtn" class="btn btn-sm btn-outline-primary" data-id="${d._id}" data-toggle="modal" data-target="#reportModal"
     title="View">
     <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-binoculars-fill" fill="currentColor"
         xmlns="http://www.w3.org/2000/svg">
@@ -121,9 +121,12 @@
   });
 </script>
 
+
+
+
 <div
   class="modal fade"
-  id="terminateModal"
+  id="reportModal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="exampleModalCenterTitle"
@@ -132,7 +135,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Terminate User</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Report</h5>
         <button
           type="button"
           class="close"
@@ -143,84 +146,90 @@
         </button>
       </div>
       <div class="modal-body">
-        Are you sure you want to Terminate this Account ?
+        <div class="row">
+          <div class="col-sm">
+            <strong>Reported By:</strong>
+          </div>
+          <div class="col-sm">
+           <span id="reportedBy"></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <strong>Reported User:</strong>
+          </div>
+          <div class="col-sm">
+            <span id="reportedUser"></span>
+
+          </div>
+        </div>
+        <br/>
+        <div class="row">
+          <div class="col-sm">
+            <strong>Category:</strong>
+          </div>
+          <div class="col-sm">
+            <span id="reportCategory"></span>
+
+          </div>
+        </div>
+        <br/>
+
+        <div class="row">
+          <div class="col-sm">
+            <strong>Reported On:</strong>
+          </div>
+          <div class="col-sm">
+            <span id="reportedOn"></span>
+
+          </div>
+        </div>
+        <br/>
+
+        <div class="row">
+          <div class="col-sm">
+            <strong>Message:</strong>
+          </div>
+          <div class="col-sm">
+            <span id="message"></span>
+           
+
+          </div>
+        </div>
         <span id="terminate-modal-id" hidden></span>
       </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          data-dismiss="modal"
-        >
-          No
-        </button>
-        <button type="button" class="btn btn-outline-danger" id="btnTerminate">
-          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-          </svg>
-          Terminate
-        </button>
-      </div>
+    
     </div>
   </div>
 </div>
 
-<div
-  class="modal fade"
-  id="success-terminate-modal"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="exampleModalLongTitle"
-  aria-hidden="true"
->
-  <div
-    class="modal-dialog modal-dialog-centered"
-    role="docexampleModalLongument"
-  >
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">
-          Successfully Terminated Account
-        </h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">The User account has been terminated Successfully.</div>
-    </div>
-  </div>
-</div>
+
+
 
 <script>
-  $(document).on("click", "#terminatebtn", function () {
+  $(document).on("click", "#reportbtn", async function () {
     let id = $(this).data("id");
-    document.getElementById("terminate-modal-id").innerHTML = id;
-  });
-  document.getElementById("btnTerminate").addEventListener("click", () => {
-    let id = document.getElementById("terminate-modal-id").innerText;
-    fetch(`/api/admin/block-user/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        // Authorization: "Bearer " + Cookies.get("token"),
-      },
-    }).then((response) => {
-      if (response.ok) {
-        $("#terminateModal").modal("hide");
-        setTimeout(function () {
-          $("#success-terminate-modal").modal("show");
-        }, 300);
-        $("#users_datatable").DataTable().ajax.reload(null, false);
-        setTimeout(function () {
-          $("#success-terminate-modal").modal("hide");
-        }, 2000);
+    let response=await fetch(`/api/admin/reports/${id}`,{
+      method: 'GET', 
+      headers:{
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer " + Cookies.get("token") 
       }
     });
+    let data=await response.json();
+    if(data){
+      document.getElementById("terminate-modal-id").innerHTML = id;
+      document.getElementById("reportedBy").innerHTML = data.reportedBy.username;
+      document.getElementById("reportedUser").innerHTML = data.reportedUser.username;
+      document.getElementById("reportCategory").innerHTML = data.reportCategory;
+      let date=new Date(data.updated_at);
+      date=date.toString();
+      date=date.replace("GMT+0200 (Central European Summer Time)","");
+      document.getElementById("reportedOn").innerHTML = date;
+      document.getElementById("message").innerHTML = data.reportMessage;
+      
+    }
+  
   });
+ 
 </script>

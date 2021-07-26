@@ -59,7 +59,7 @@
         "<'row'<'col-sm-5'i><'col-sm-7'<'float-right p-2'p>>>",
       ajax: {
         url: "/api/admin/blocked-list",
-        // headers: { Authorization: "Bearer " + Cookies.get("token") },
+        headers: { Authorization: "Bearer " + Cookies.get("token") },
         method: "GET",
         dataFilter: (data) => {
           let json = JSON.parse(data);
@@ -210,7 +210,7 @@
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + Cookies.get("token"),
+        Authorization: "Bearer " + Cookies.get("token"),
       },
     }).then((response) => {
       if (response.ok) {
